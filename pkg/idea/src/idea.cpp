@@ -138,8 +138,8 @@ void Idea::getWindows(double windowWidth , const Transition &transition , vector
 	double startTime = transition.prevTransition->time;
 	double endTime   = transition.time;
 	
-	int startWindow = (int) startTime / windowWidth;
-	int endWindow = (int) endTime / windowWidth;
+	int startWindow = startTime / windowWidth;
+	int endWindow = endTime / windowWidth;
 
 	for(int w = startWindow ; w <= endWindow ; ++w)
 	{
