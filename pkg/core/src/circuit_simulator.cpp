@@ -144,7 +144,7 @@ bool CircuitSimulator::initial(int netID , bool value)
 	return true;
 }
 
-bool CircuitSimulator::simulate(std::string &pi , double changeTime , bool capture)
+bool CircuitSimulator::simulate(std::string &pi , double changeTime , bool launchCycle)
 {
 	if(cir == NULL || lib == NULL || cir->dff_d == "")
 	{
@@ -178,7 +178,7 @@ bool CircuitSimulator::simulate(std::string &pi , double changeTime , bool captu
 		}
 	}
 	
-	if(capture)
+	if(launchCycle)
 		netWave[clkID] = clkWave;
 	else
 	{

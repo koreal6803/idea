@@ -860,7 +860,6 @@ void sdf_fileerror(const char *msg) {
 }
 
 void sdf_filefreeSdfDelayDef(SdfDelayDef *defs) {
-    SdfDelayDef *def = defs->head;
 }
 
 

@@ -1,3 +1,0 @@
-#ifndef __IR_INTERFACE_PAT_READER__
-#define __IR_INTERFACE_PAT_READER__
-#endif

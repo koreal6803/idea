@@ -389,7 +389,7 @@ void VerifyIdea::pathVerify(const Transition *t , double pathDelay , double extr
 	double originPathDelayIdea = t->time;
 	double extraPathDelayIdea(0);
 	
-	int size = ideaPathDelay.size();
+	unsigned size = ideaPathDelay.size();
 	// const
 	pathVerify(const_cast<Transition*>(t) , pathDelay , extraDelay);
 	while(size < ideaPathDelay.size())

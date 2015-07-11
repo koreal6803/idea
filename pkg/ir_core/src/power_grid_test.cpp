@@ -28,7 +28,7 @@ int main(int argc , char ** argv)
 	
 	
 	const vector<Component> &components = powerGrid.getComponents();
-	for(int i = 0 ; i < components.size() ; i++)
+	for(unsigned i = 0 ; i < components.size() ; i++)
 		cout << "components type: " << components[i].getType() << " vpos: " << components[i].getVPos() << " vneg: " << components[i].getVNeg() << " val: " << components[i].getValue() <<endl;
 	cout <<endl << endl;
 	cout << "read power grid success" <<endl;

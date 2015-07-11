@@ -29,7 +29,7 @@ int main(int argc , char ** argv)
 
 	
 	vector<Node>  &pgNodes = powerGrid.getNodes();
-	for(int i = 0 ; i < pgNodes.size() ; i++)
+	for(unsigned i = 0 ; i < pgNodes.size() ; i++)
 		pgNodes[i].setVoltage(0);
 	
 	PowerGridSolver matrixSolver(&powerGrid, true);
@@ -41,7 +41,7 @@ int main(int argc , char ** argv)
 		matrixSolver.solve();
 
 		//print
-		for(int i = 0; i < pgNodes.size() ; i++)
+		for(unsigned i = 0; i < pgNodes.size() ; i++)
 		{
 			if(pgNodes[i].isPad())
 				cout << "PAD "; 
