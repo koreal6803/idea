@@ -49,22 +49,22 @@ If you want to perform path generation to build SPICE files for each patterns, t
 ## Usage
 
 Perform timed-logic simulation
-> ./script/sim_test **<CIRCUIT_NAME>**
+> ./script/sim_test **CIRCUIT_NAME**
 
 Perform idea simulation under specific supply voltage
-> ./script/idea_test.sh **<CIRCUIT_NAME> <VOLTAGE>**
+> ./script/idea_test.sh **CIRCUIT_NAME VOLTAGE**
 
 Perform pattern regeneration
-> ./script/pat_regene.sh **<LIB.V> <CIRCUIT.V> <CIRCUIT_NAME> <WGL> <IDEA_LOG><METHOD_ID> <ITERATION>**
+> ./script/pat_regene.sh **LIB.V CIRCUIT.V CIRCUIT_NAME WGL IDEA_LOG METHOD_ID ITERATION**
 
 Simulate ppi2 for test patterns
-> ./script/find_ppo.sh **<CIRCUIT_NAME>**
+> ./script/find_ppo.sh **CIRCUIT_NAME**
 
 Generate spice file (with/without power grid) and perform HSPICE/NANOSIM simulation automatically
-> ./script/path_gene.sh **<CIRCUIT_NAME> <VOLTAGE> <NANOSIM/HSPICE>**
+> ./script/path_gene.sh **CIRCUIT_NAME VOLTAGE NANOSIM/HSPICE**
 
 Perform idea simulation under specific pattern file
-> ./script/idea_log.sh **<CIRCUIT_NAME> <VOLTAGE> <PAT>**
+> ./script/idea_log.sh **CIRCUIT_NAME VOLTAGE PAT**
 
 ## Output File Format
 
