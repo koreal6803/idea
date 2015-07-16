@@ -62,7 +62,7 @@ PKG_ir_core_LD_LIBS = klu amd btf colamd suitesparseconfig
 
 #idea
 PKG_idea_DEPS = ir_core core utility matrix
-PKG_idea_MAINS = idea_test.cpp  path_gene.cpp pat_regene.cpp 
+PKG_idea_MAINS = idea_test.cpp  path_gene.cpp regeneration.cpp idea_main.cpp
 PKG_idea_INCS = ext_inc/klu
 PKG_idea_LD_PATHS = ext_lib/klu
 PKG_idea_LD_LIBS = klu amd btf colamd suitesparseconfig
@@ -91,7 +91,8 @@ MAIN_ir_core/power_grid_test.cpp_BIN = power_grid_test.out
 MAIN_ir_core/power_grid_solver_test.cpp_BIN = power_grid_solver_test.out
 MAIN_idea/idea_test.cpp_BIN = idea_test.out
 MAIN_idea/path_gene.cpp_BIN = path_gene.out
-MAIN_idea/pat_regene.cpp_BIN = pat_regene.out
+MAIN_idea/regeneration.cpp_BIN = regeneration.out
+MAIN_idea/idea_main.cpp_BIN = idea_main.out
 
 ### libraries ###############################################################
 # STA_LIBS        - static archived libraries

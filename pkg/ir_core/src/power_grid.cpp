@@ -204,8 +204,8 @@ int PowerGrid::addVDD(double vdd)
 	addIndependentVoltageSource(nodes[rightUpNode].name_ , vdd);
 	gndNodes.push_back(rightUpNode);
 
-	addIndependentVoltageSource(nodes[leftDownNode].name_ , vdd);
-	gndNodes.push_back(leftDownNode);
+	//addIndependentVoltageSource(nodes[leftDownNode].name_ , vdd);
+	//gndNodes.push_back(leftDownNode);
 
 	//addIndependentVoltageSource(nodes[rightDownNode].name_ , vdd);
 	//vddNodes.push_back(rightDownNode);
@@ -239,8 +239,8 @@ int PowerGrid::addGND(double gnd)
 	addIndependentVoltageSource(nodes[rightUpNode].name_ , gnd);
 	gndNodes.push_back(rightUpNode);
 
-	addIndependentVoltageSource(nodes[leftDownNode].name_ , gnd);
-	gndNodes.push_back(leftDownNode);
+	//addIndependentVoltageSource(nodes[leftDownNode].name_ , gnd);
+	//gndNodes.push_back(leftDownNode);
 
 	//addIndependentVoltageSource(nodes[rightDownNode].name_ , gnd);
 	//vddNodes.push_back(rightDownNode);

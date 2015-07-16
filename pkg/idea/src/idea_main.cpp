@@ -78,9 +78,6 @@ using namespace std;
 /* check the parsing flag */
 void check(bool success);
 
-/* report error */
-void reportError(VerifyIdea &verify);
-
 
 int main(int argc , char ** argv)
 {
@@ -373,16 +370,7 @@ int main(int argc , char ** argv)
 
 		for(unsigned j = 0 ; j < ideaResult.powerAwarePathDelay.size() ; ++j)
 			writeValue("IR aware Path Delay(vth="<< vths[j] << ")", ideaResult.powerAwarePathDelay[j]);
-		
-		// verify workspace setup
-		string workspace = (string(argv[7])=="1.1")?
-		"../lady_idea/verify/circuit/"+cir.name:
-		"../lady_idea/verify/circuit/"+cir.name+"_"+argv[7];
-
-		// verify
-		verify.verify(cir, wave, i, workspace);
 	}
-	reportError(verify);
 	return 0;
 }
 
@@ -395,69 +383,4 @@ void check(bool success)
 		cout << "*ERROR: read file fail!" << endl;
 		exit(0);	
 	}
-}
-
-void reportError(VerifyIdea &verify)
-{
-	double avgError(0);
-	double maxError(0);
-
-	double avgExtraError(0);
-	double maxExtraError(0);
-
-	double avgPortion(0);
-	double maxPortion(0);
-
-	double avgErrorN(0);
-	double maxErrorN(0);
-
-	double avgExtraErrorN(0);
-	double maxExtraErrorN(0);
-
-	for(unsigned i = 0 ; i < verify.ideaPathDelay.size() ; ++i)
-	{
-		double ipd = verify.ideaPathDelay[i];
-		double ipdIR = verify.ideaPathDelayIR[i];
-		double spd = verify.spicePathDelay[i];
-		double spdIR = verify.spicePathDelayIR[i];
-		if(spd == 0 && ipd == 0)
-			continue;
-		if(spd == spdIR)
-			continue;
-		writeTitle("Pattern" << i);
-		writeValue("IDEA  total path delay" , ipd + ipdIR);
-		writeValue("SPICE total path delay" , spd + spdIR);
-		writeValue("IDEA  extra path delay" , ipdIR);
-		writeValue("SPICE extra path delay" , spdIR);
-		double error = (ipdIR - spdIR) / spdIR;
-		double extraError = ( (ipdIR - ipd) - (spdIR - spd) ) / (spdIR - spd);
-		double portion = abs(spdIR - spd)/ spdIR;
-
-		// max error
-		maxError = max(abs(error) , maxError);
-		maxExtraError = max(abs(extraError), maxExtraError);
-		maxPortion = max(abs(portion),maxPortion);
-		maxErrorN = max(abs(ipdIR - spdIR) , maxErrorN);
-		maxExtraErrorN = max(abs(ipdIR - ipd - spdIR + spd) , maxExtraErrorN);
-
-		// average error
-		avgError += abs(error);
-		avgExtraError += abs(extraError);
-		avgPortion += abs(portion);
-		avgErrorN += abs(ipdIR - spdIR);
-		avgExtraErrorN += abs(ipdIR - ipd - spdIR + spd );
-
-	}
-	avgError/=verify.ideaPathDelay.size();
-	avgExtraError/=verify.ideaPathDelay.size();
-	avgPortion/=verify.ideaPathDelay.size();
-	avgErrorN/=verify.ideaPathDelay.size();
-	avgExtraErrorN/=verify.ideaPathDelay.size();
-
-	writeTitle("Error report");
-	writeValue("average error" , avgError);
-	writeValue("max error" , maxError);
-
-	writeValue("average extra error" , avgExtraError);
-	writeValue("max extra error" , maxExtraError);
 }

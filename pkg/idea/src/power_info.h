@@ -16,12 +16,10 @@ public:
 	int maxHazard(Wave *wave , Circuit *cir)
 	{
 		int ret = 0;
-		int id = 0;
 		for(unsigned i = 0 ; i < cir->nets.size() ; ++i)
 		{
 			if(wave[i].transition.size() > (unsigned)ret)
 			{
-				id = i;
 				ret = wave[i].transition.size();
 			}
 		}
