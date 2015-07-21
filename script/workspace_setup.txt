@@ -1,0 +1,3 @@
+benchmarkDir ../../bench_stable_0528
+regenerationDir ../reGeneration
+spiceDir ../spice
