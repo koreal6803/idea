@@ -354,7 +354,7 @@ IdeaResult Idea::run(Wave *wave , std::vector<double> &vths)
 			}
 
 			/* save transition , vls and vhs (for ideaResult) */
-			int transitionID = extraGateDelays[0].size();
+			int transitionID = extraGateDelays[0].size() - 1;
 			
 			// map transition location to ID
 			transitionIDs[&transition] = transitionID;
