@@ -41,7 +41,7 @@ void Idea::set(Circuit *cir)
 {
 	if(pgs_ == NULL)
 	{
-		cout << "please setup power grid solver first!"<<endl;
+		 cout << "please setup power grid solver first!"<<endl;
 		return;
 	}
 	cir_ = cir;
@@ -330,7 +330,7 @@ IdeaResult Idea::run(Wave *wave , std::vector<double> &vths)
 			double vos = voh - vol;
 			double deltaVos = vos - vdd;
 			
-			/* calculate vsw1 */
+			/* calculate vis */
 			double vil;
 			double vih;
 			int prevNetID = cells[cellID].ipt_net_id[transition.iptPin];
