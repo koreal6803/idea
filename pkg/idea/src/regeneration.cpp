@@ -30,6 +30,40 @@
 using namespace pgNs;
 using namespace std;
 
+#define writeProgramName();\
+	cout << " ______________________________________________________________ " << endl;\
+	cout << "|                                                              |" << endl;\
+	cout << "|  NEW IDEA Simulator                      koreal6803          |" << endl;\
+	cout << "|______________________________________________________________|" << endl;\
+	cout << endl;
+
+#define writeTitle(TITLE)\
+	cout << "|" << endl;\
+	cout << "|" << endl;\
+	cout << "|" << endl;\
+	cout << "|  " << TITLE << endl;\
+	cout << "|______________________________________________________________ " << endl;\
+	cout << "|" << endl;
+
+
+#define writeTime(FUNC_NAME , FUNC)\
+	cout << "|  " <<  std::left << setw(30)  << FUNC_NAME;\
+	cout.flush();\
+	start = clock();\
+	FUNC;\
+	end = clock();\
+	cout << std::right << setw(29) << (double)(end - start)/CLOCKS_PER_SEC << "s"  <<endl;
+
+
+#define writeValue(NAME , VALUE)\
+{\
+	stringstream ss;\
+	stringstream ss2;\
+	ss << NAME;\
+	ss2 << VALUE;\
+	cout << "|  " << std::left << setw(30) << ss.str()  << std::right << setw(30) << ss2.str() <<endl;\
+}
+
 vector<bool> identifyRiskPattern(std::string &log , double clock_period);
 void remove(const string &dir)
 {
@@ -72,57 +106,19 @@ bool faultExist(const string &file)
 		return true;
 }
 
-#define writeProgramName()\
-	cout << " ______________________________________________________________ " << endl;\
-	cout << "|                                                              |" << endl;\
-	cout << "|  NEW IDEA Simulator                      koreal6803          |" << endl;\
-	cout << "|______________________________________________________________|" << endl;\
-	cout << endl;
 
-#define writeTitle(TITLE)\
-	cout << "|" << endl;\
-	cout << "|" << endl;\
-	cout << "|" << endl;\
-	cout << "|  " << TITLE << endl;\
-	cout << "|______________________________________________________________ " << endl;\
-	cout << "|" << endl;
-
-
-#define writeTime(FUNC_NAME , FUNC)\
-	cout << "|  " <<  std::left << setw(30)  << FUNC_NAME;\
-	cout.flush();\
-	start = clock();\
-	FUNC;\
-	end = clock();\
-	cout << std::right << setw(29) << (double)(end - start)/CLOCKS_PER_SEC << "s"  <<endl;\
-
-
-#define writeValue(NAME , VALUE)\
-{\
-	stringstream ss;\
-	stringstream ss2;\
-	ss << NAME;\
-	ss2 << VALUE;\
-	cout << "|  " << std::left << setw(30) << ss.str()  << std::right << setw(30) << ss2.str() <<endl;\
-}
 int main(int argc , char ** argv)
 {
 	// check files
-	if(argc < 4)
-	{
-		cout << "please input lib.v cir.v cirName pat.wgl idea.log methodID iteration" <<endl;
+	if(argc < 7)
 		return 0;
-	}
 	
-	clock_t start,end;
-
 	string libv = argv[1];
 	string verilog = argv[2];
 	string circuitName = argv[3];
 	string wgl = argv[4];
-	string idea = argv[5];
-	int method = string(argv[6])[0] - '0';
-	int iteration = string(argv[7])[0] - '0';
+	string ideaLog = argv[5];
+	string workspace = argv[6]
 
 	writeProgramName();
 	
@@ -131,10 +127,7 @@ int main(int argc , char ** argv)
 	writeValue("verilog" , verilog);
 	writeValue("circuit" , circuitName);
 	writeValue("wgl" , wgl);
-	writeValue("idea log" , idea);
-	writeValue("method" , method);
-	writeValue("iteration" , iteration);
-	cout << "continue...?" << endl;
+	writeValue("idea log" , ideaLog);
 	getchar();
 
 
@@ -144,21 +137,13 @@ int main(int argc , char ** argv)
 	
 	// setup workspace
 	struct stat sb;
-	if (stat("./reGene", &sb))
-		mkdir("reGene");
+	if (stat(workspace.c_str(), &sb))
+		mkdir(workspace);
 	
-	string reGeneWorkSpace = "./reGene/" + circuitName;
+	string reGeneWorkSpace = workspace + '/' + circuitName;
 	if (stat(reGeneWorkSpace.c_str(), &sb))
 		mkdir(reGeneWorkSpace);
 	
-	if(method == 0)
-		reGeneWorkSpace = "./reGene/" + circuitName + "/method0";
-	else
-		reGeneWorkSpace = "./reGene/" + circuitName + "/method1";
-
-	if (stat(reGeneWorkSpace.c_str(), &sb))
-		mkdir(reGeneWorkSpace);
-
 	// re-atpg generator
 	ReAtpg ra;
 
@@ -166,8 +151,8 @@ int main(int argc , char ** argv)
 
 	// commercial tool
 	TetraMax tmax;
-	tmax.setVerilog(string("../../../../../") + verilog);
-	tmax.setLibrary(string("../../../../../") + libv);
+	tmax.setVerilog(string("../../../") + verilog);
+	tmax.setLibrary(string("../../../") + libv);
 	tmax.setCircuit(circuitName);
 
 	// set clock period
@@ -183,7 +168,7 @@ int main(int argc , char ** argv)
 	else
 		clock_period = 0;
 		
-
+	int iteration = 0;
 	while(iteration < 10)
 	{
 		// in the iteration directory: 
@@ -211,7 +196,7 @@ int main(int argc , char ** argv)
 		move(targetWgl , iterationDir + "/pattern.wgl");
 
 		// identify the risky patterns
-		vector<bool> safe = identifyRiskPattern(idea , clock_period);
+		vector<bool> safe = identifyRiskPattern(ideaLog , clock_period);
 		
 		// stop while patterns are safe patterns
 		if(allTrue(safe))
@@ -241,16 +226,7 @@ int main(int argc , char ** argv)
 
 		
 		string undetectFaultList;
-		if(method == 0)
-		{
-			writeTime("1-stage fault simulation" , 
-			undetectFaultList = ra.faultSim1Stage(fsDir , &tmax));
-		}
-		else
-		{
-			writeTime("2-stage fault simulation" , 
-			undetectFaultList = ra.faultSim2Stage(fsDir , &tmax));
-		}
+		undetectFaultList = ra.faultSim2Stage(fsDir , &tmax);
 
 		if(!faultExist(undetectFaultList))
 			break;
@@ -270,15 +246,16 @@ int main(int argc , char ** argv)
 		system(script.c_str());
 
 		// simulate recovery patterns
-		script = "./script/idea_log.sh " + circuitName + " 1.1 " 
+		script = "./script/pat_idea.sh " + circuitName + " 1.1 " 
 				 + iterationDir + "/recovery.pat | tee " + iterationDir + "/recovery.log";
+		cout << script << endl;
 		system(script.c_str());
 		
 		// prepare next stage
 
 		iteration++;
 		targetWgl = iterationDir + "/recovery.wgl";
-		idea = iterationDir + "/recovery.log";
+		ideaLog = iterationDir + "/recovery.log";
 
 
 	}
