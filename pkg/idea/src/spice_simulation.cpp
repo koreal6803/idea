@@ -20,7 +20,7 @@
 #include "ir_core/src/power_grid.h"
 #include "ir_core/src/power_grid_solver.h"
 
-#include "path_generator.h"
+#include "spice_simulator.h"
 
 #include "verify.h"
 
@@ -28,12 +28,19 @@
 using namespace pgNs;
 using namespace std;
 
+#include <sys/stat.h>
+void mkdir(const string &dir)
+{
+	string script = "mkdir " + dir;
+	system(script.c_str());
+}
+
 int main(int argc , char ** argv)
+
 {
 	// check files
-	if(argc < 4)
+	if(argc < 10)
 	{
-		cout << "please input verlog, sdf and pat file" <<endl;
 		return 0;
 	}
 	
@@ -291,26 +298,36 @@ int main(int argc , char ** argv)
 	cout << "|" << endl;
 	cout << endl << endl;
 
-	string workspace = "../lady_idea/verify/circuit/" + cir.name + "_" + argv[7];
-	string command = "mkdir " + workspace;
-	system(command.c_str());
+	string workspace = string(argv[9]);
+	// setup workspace
+	struct stat sb;
+	if (stat(workspace.c_str(), &sb))
+		mkdir(workspace);
+	
+	workspace = string(argv[9]) + "/" + cir.name + "_" + string(argv[7]);
+	if (stat(workspace.c_str(), &sb))
+		mkdir(workspace);
 
 	// ===============================================================================
 	// perform circuit simulation
 	// ===============================================================================
-	PathGenerator pathGene(&cir, vdd);
+	SpiceSimulator pathGene(&cir, vdd);
 	pathGene.set(&pg);
 	pathGene.set(&ps.piOrder , &ps.poOrder , &ps.ppiOrder);
 	pathGene.set(workspace);
+	pathGene.setOriginalSpFile(string(argv[10]));
+	
 	//#pragma omp parallel for firstprivate(cs) 
 	//
 
-	PathGenerator::SimType type;
+	SpiceSimulator::SimType type;
 	cout << argv[8] << endl;
 	if(string(argv[8]) == "HSPICE")
-		type = PathGenerator::HSPICE;
+		type = SpiceSimulator::HSPICE;
 	else
-		type = PathGenerator::NANO_SIM;
+		type = SpiceSimulator::NANO_SIM;
+	
+	
 	
 	for(unsigned i = 0 ; i < ps.patterns.size() ; ++i)
 	{
@@ -329,7 +346,7 @@ int main(int argc , char ** argv)
 
 		
 		stringstream ss;
-		if(type == PathGenerator::HSPICE)
+		if(type == SpiceSimulator::HSPICE)
 			ss << workspace << "/pat" << i << "/sp_result.txt";
 		else
 			ss << workspace << "/pat" << i << "/nano_result.txt";

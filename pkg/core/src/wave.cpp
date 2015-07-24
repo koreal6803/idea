@@ -410,8 +410,8 @@ void Wave::propagate(int cellType, int opt, double riseCap, double fallCap, Libr
 	//for(unsigned i = 1 ; i < transition.size() ; ++i)
 	//	assert(transition[i].time > transition[i+1].time);
 	
-	for(int i = transition.size()-1 ; i >= 0 ; i--)
-		if(i+1 < (int)transition.size() && transition[i+1].time < transition[i].time + 0.005)
-			transition.erase(transition.begin()+i , transition.begin()+i+2);
+	//for(int i = transition.size()-1 ; i >= 0 ; i--)
+	//	if(i+1 < (int)transition.size() && transition[i+1].time < transition[i].time + 0.005)
+	//		transition.erase(transition.begin()+i , transition.begin()+i+2);
 	
 }

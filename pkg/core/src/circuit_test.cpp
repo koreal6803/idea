@@ -15,7 +15,6 @@
 #include "library_parser.h"
 
 using namespace std;
-using namespace IntfNs;
 
 
 int main(int argc, char **argv) {

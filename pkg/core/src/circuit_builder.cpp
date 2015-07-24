@@ -9,8 +9,6 @@
 using namespace std;
 
 #include "library.h"
-using namespace IntfNs;
-//using namespace IntfNs;
 
 CircuitBuilder::CircuitBuilder(){
 	lib = NULL;

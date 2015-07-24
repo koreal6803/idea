@@ -1,4 +1,4 @@
-#include "path_generator.h"
+#include "spice_simulator.h"
 #include "verify.h"
 #include "idea.h"
 #include "core/src/circuit.h"
@@ -11,7 +11,7 @@
 using namespace std;
 using namespace pgNs;
 
-bool PathGenerator::set(vector<int> *piOrder , vector<int> *poOrder, vector<int> *ppiOrder)
+bool SpiceSimulator::set(vector<int> *piOrder , vector<int> *poOrder, vector<int> *ppiOrder)
 {
 	this->piOrder = piOrder;
 	this->ppiOrder = ppiOrder;
@@ -19,19 +19,24 @@ bool PathGenerator::set(vector<int> *piOrder , vector<int> *poOrder, vector<int>
 	return true;
 }
 
-bool PathGenerator::set(pgNs::PowerGrid *pg)
+bool SpiceSimulator::set(pgNs::PowerGrid *pg)
 {
 	pg_ = pg;
 	return true;
 }
 
-bool PathGenerator::set(std::string workspace)
+bool SpiceSimulator::set(std::string workspace)
 {
 	this->workspace = workspace;
 	return true;
 }
 
-bool PathGenerator::sim(Pattern *pat, double piTime, double piPeriod, SimType type,int no)
+bool SpiceSimulator::setOriginalSpFile(const std::string &originalSpFile)
+{
+	this->originalSpFile = originalSpFile;
+	return true;
+}
+bool SpiceSimulator::sim(Pattern *pat, double piTime, double piPeriod, SimType type,int no)
 {
 	stringstream ss;
 	ss << no;
@@ -40,12 +45,13 @@ bool PathGenerator::sim(Pattern *pat, double piTime, double piPeriod, SimType ty
 	string spFileName = workspace +"/pat"+ss.str()+"/pat.sp";
 	std::string line;
 	
-	std::string fileName = "../../spCombine/circuit/" + cir_->getName() + ".sp";
+	std::string fileName = originalSpFile;
 
 	std::ifstream fin(fileName.c_str());
 	if(!fin)
 	{
-		std::cout << "**ERROR VerifyIdea::verify: Can't find file " << fileName << std::endl;
+		std::cout << "**WARRN VerifyIdea::verify: Can't find file " << fileName << std::endl;
+		std::cout << "        simulation fail" << endl;
 		return false;;
 	}
 
@@ -168,7 +174,7 @@ bool PathGenerator::sim(Pattern *pat, double piTime, double piPeriod, SimType ty
 	return true;
 }
 
-bool PathGenerator::extractResult(SimType type , string workspace , int no)
+bool SpiceSimulator::extractResult(SimType type , string workspace , int no)
 {
 	pathDelay_.clear();
 	extraPathDelay_.clear();
@@ -184,7 +190,8 @@ bool PathGenerator::extractResult(SimType type , string workspace , int no)
 		fin.open(result.c_str());
 		if(!fin)
 		{
-			cout << "**ERROR: PathGenerator::sim: can't open " << result << endl;
+			cout << "**WARRN: SpiceSimulator::sim: can't open " << result << endl;
+			cout << "**       Extraction fail!" << endl;
 			return false;
 		}
 		cout << "open " << result << endl;
@@ -240,7 +247,7 @@ bool PathGenerator::extractResult(SimType type , string workspace , int no)
 		fin.open(result.c_str());
 		if(!fin)
 		{
-			cout << "PathGenerator::sim: can't open " << result << endl;
+			cout << "SpiceSimulator::sim: can't open " << result << endl;
 			return false;
 		}
 		string in;
@@ -278,7 +285,7 @@ bool PathGenerator::extractResult(SimType type , string workspace , int no)
 		fin.open(result.c_str());
 		if(!fin)
 		{
-			cout << "PathGenerator::sim: can't open " << result << endl;
+			cout << "SpiceSimulator::sim: can't open " << result << endl;
 			return false;
 		}
 		assert(fin);
@@ -315,7 +322,7 @@ bool PathGenerator::extractResult(SimType type , string workspace , int no)
 	return true;
 }
 
-void PathGenerator::setMeasurement(SpMaker *sp)
+void SpiceSimulator::setMeasurement(SpMaker *sp)
 {
 	
 	for(unsigned i = 0 ; i < cir_->ff.size() ; ++i)
@@ -355,7 +362,7 @@ void PathGenerator::setMeasurement(SpMaker *sp)
 	}
 }
 
-void PathGenerator::save(const string &fileName)
+void SpiceSimulator::save(const string &fileName)
 {
 	ofstream fout(fileName.c_str());
 
@@ -381,77 +388,5 @@ void PathGenerator::save(const string &fileName)
 	for(map<string,double>::iterator it = pathDelay_.begin() ; it != pathDelay_.end() ; it++)
 		fout << it->first << " " << it->second << " " << extraPathDelay_[it->first] << endl;
 
-	return;
-}
-
-void VerifyIdea::pathVerify(const Transition *t , double pathDelay , double extraDelay)
-{
-	double originPathDelayIdea = t->time;
-	double extraPathDelayIdea(0);
-	
-	unsigned size = ideaPathDelay.size();
-	// const
-	pathVerify(const_cast<Transition*>(t) , pathDelay , extraDelay);
-	while(size < ideaPathDelay.size())
-	{
-		ideaPathDelay.pop_back();
-		ideaPathDelayIR.pop_back();
-		spicePathDelay.pop_back();
-		spicePathDelayIR.pop_back();
-	}
-
-
-	while(t)
-	{
-		///* look into path data information
-
-		// get the net of transition
-		int netID = t->netID;
-		
-		// get the net of previous transition
-		int prevNetID = -1;
-		if(t->prevTransition)
-			prevNetID = t->prevTransition->netID;
-		else
-			break;// there are no previous transition anymore
-
-		// get the cell between above two transition
-		int cellID = cir_->nets[netID].ipt_cell_id;
-		string cellName = cir_->cells[cellID].name;
-
-		cout << cir_->nets[netID].name << "\t" << cellName << "\t" << t->time <<" " << cir_->nets[netID].totalRiseCap << " " << t->value<< endl;
-
-		int transitionID = idea->transitionIDs[t];
-		int center = idea->extraGateDelays.size()/2;
-
-		extraPathDelayIdea += idea->extraGateDelays[center][transitionID];
-		t = t->prevTransition;
-	}
-	
-	spicePathDelay.push_back(pathDelay*1e9);
-	spicePathDelayIR.push_back((pathDelay+extraDelay)*1e9);
-	
-	double voltage = idea->pgs_->getPowerGrid()->getSupplyVoltage();
-
-	double error_mean = double(cir_->cells.back().level)/10000 + sqrt(double(cir_->ff.size()))/3000/voltage;
-	double u = rand() / (double) RAND_MAX;
-	double v = rand() / (double) RAND_MAX;
-	double error = sqrt(-2 * log(u)) * cos(2 * M_PI * v)*error_mean*0.3 + error_mean;
-
-	if(rand()%2)
-		error = -error;
-	originPathDelayIdea = pathDelay*1e9 + error*pathDelay*1e9;
-
-	error_mean = 0.5 / sqrt(sqrt(cir_->ff.size()*voltage)) + cir_->ff.size()/400000/voltage;
-	u = rand() / (double) RAND_MAX;
-	v = rand() / (double) RAND_MAX;
-	error = sqrt(-2 * log(u)) * cos(2 * M_PI * v)*error_mean*0.3 + error_mean;
-
-	if(rand()%2)
-		error = -error;
-	extraPathDelayIdea = extraDelay*1e9 + extraDelay*error*1e9;
-
-	ideaPathDelay.push_back(originPathDelayIdea);
-	ideaPathDelayIR.push_back(originPathDelayIdea+extraPathDelayIdea);
 	return;
 }

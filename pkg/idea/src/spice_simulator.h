@@ -11,7 +11,7 @@ class Pattern;
 class PowerGrid;
 class SpMaker;
 
-class PathGenerator
+class SpiceSimulator
 {
 public:
 	enum SimType
@@ -19,10 +19,11 @@ public:
 		HSPICE,NANO_SIM
 	};
 
-	PathGenerator(Circuit *cir,double vdd):cir_(cir),vdd_(vdd){}
+	SpiceSimulator(Circuit *cir,double vdd):cir_(cir),vdd_(vdd){}
 	bool set(std::vector<int> *piOrder , std::vector<int> *poOrder, std::vector<int> *ppiOrder);
 	bool set(pgNs::PowerGrid *pg);
 	bool set(std::string workspace);
+	bool setOriginalSpFile(const std::string &originalSpFile);
 	bool sim(Pattern *pat, double piTime, double piPeriod, SimType simType,int no);
 	bool extractResult(SimType type , std::string workspace , int no);
 	void save(const std::string &fileName);
@@ -41,6 +42,7 @@ private:
 	std::vector<int> *piOrder;
 	std::vector<int> *poOrder;
 	std::vector<int> *ppiOrder;
+	std::string originalSpFile;
 
 	std::string workspace;
 

@@ -13,7 +13,6 @@
 #include <map>
 #include <string>
 #include "circuit.h"
-#include "interface/src/vlog_file.h"
 
 //class in this header file:
 class Circuit;
